@@ -1,0 +1,21 @@
+{
+    "name": "maymeow/shortener",
+    "description": "Simple link shortening service",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "MayMeow\\Shortener\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "May Meow",
+            "email": "3164256+MayMeow@users.noreply.github.com"
+        }
+    ],
+    "require": {},
+    "scripts": {
+        "test": "php test.php"
+    }
+}

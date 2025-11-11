@@ -43,6 +43,17 @@ New-ShortLink -Url "https://example.org" -ApiBaseUrl "http://127.0.0.1:8080"
 Get-ShortLink -Code "abc" -ApiBaseUrl "http://127.0.0.1:8080"
 ```
 
+## Docker
+
+Run the API with Docker Compose:
+
+```bash
+export SHORTENER_SECRET="replace-with-a-random-string"
+docker compose up --build
+```
+
+The service listens on `http://localhost:8080` and stores its SQLite database in `./data/shortener.sqlite` on the host.
+
 ## API
 
 - `POST /api/shorten` (authenticated) accepts `{"url": "https://target"}` and returns the `code`, `short_url`, `target_url`, and `created_at` fields.

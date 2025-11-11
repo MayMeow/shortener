@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  shortener:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      SHORTENER_SECRET: ${SHORTENER_SECRET:-replace-with-a-random-string}
+    volumes:
+      - ./data:/var/www/html/data
+    restart: unless-stopped

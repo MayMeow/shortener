@@ -33,6 +33,16 @@
 	curl -i http://127.0.0.1:8080/abc
 	```
 
+### PowerShell helper
+
+```powershell
+Import-Module "$PSScriptRoot/powershell/ShortenerClient.psm1"
+$env:SHORTENER_SECRET = "replace-with-a-random-string"
+
+New-ShortLink -Url "https://example.org" -ApiBaseUrl "http://127.0.0.1:8080"
+Get-ShortLink -Code "abc" -ApiBaseUrl "http://127.0.0.1:8080"
+```
+
 ## API
 
 - `POST /api/shorten` (authenticated) accepts `{"url": "https://target"}` and returns the `code`, `short_url`, `target_url`, and `created_at` fields.

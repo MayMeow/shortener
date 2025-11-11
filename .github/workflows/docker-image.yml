@@ -25,8 +25,8 @@ jobs:
       
       - name: Set lowercase owner
         id: vars
-        run: echo "owner_lowercase=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
+        run: echo "owner_lowercase=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+        shell: bash
 
       - name: Login to GitHub Container Registry
         if: github.event_name == 'push'

@@ -37,6 +37,7 @@ jobs:
           context: .
           push: ${{ github.event_name == 'push' }}
           tags: |
-            ghcr.io/${{ github.repository_owner }}/shortener:latest
+            ghcr.io/${{ github.repository_owner | lower }}/shortener:latest
+            ghcr.io/${{ github.repository_owner | lower }}/shortener:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

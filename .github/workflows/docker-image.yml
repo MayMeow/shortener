@@ -34,11 +34,27 @@ jobs:
         id: image_tags
         env:
           OWNER: ${{ steps.vars.outputs.owner_lowercase }}
+          DOCKERHUB_REPO: ${{ secrets.DOCKERHUB_REPOSITORY }}
         run: |
           echo "latest=ghcr.io/${OWNER}/shortener:latest" >> "$GITHUB_OUTPUT"
           echo "sha=ghcr.io/${OWNER}/shortener:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
           if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
             echo "version=ghcr.io/${OWNER}/shortener:${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            STRIPPED_TAG="${GITHUB_REF_NAME#v}"
+            if [ "$STRIPPED_TAG" != "$GITHUB_REF_NAME" ]; then
+              echo "version_sanitized=ghcr.io/${OWNER}/shortener:${STRIPPED_TAG}" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+          if [ -n "${DOCKERHUB_REPO}" ]; then
+            echo "dockerhub_latest=${DOCKERHUB_REPO}:latest" >> "$GITHUB_OUTPUT"
+            echo "dockerhub_sha=${DOCKERHUB_REPO}:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+            if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+              echo "dockerhub_version=${DOCKERHUB_REPO}:${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+              STRIPPED_TAG="${GITHUB_REF_NAME#v}"
+              if [ "$STRIPPED_TAG" != "$GITHUB_REF_NAME" ]; then
+                echo "dockerhub_version_sanitized=${DOCKERHUB_REPO}:${STRIPPED_TAG}" >> "$GITHUB_OUTPUT"
+              fi
+            fi
           fi
         shell: bash
 
@@ -50,6 +66,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Login to Docker Hub
+        if: github.event_name == 'push' && secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != ''
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
@@ -59,5 +82,10 @@ jobs:
             ${{ steps.image_tags.outputs.latest }}
             ${{ steps.image_tags.outputs.sha }}
             ${{ steps.image_tags.outputs.version }}
+            ${{ steps.image_tags.outputs.version_sanitized }}
+            ${{ steps.image_tags.outputs.dockerhub_latest }}
+            ${{ steps.image_tags.outputs.dockerhub_sha }}
+            ${{ steps.image_tags.outputs.dockerhub_version }}
+            ${{ steps.image_tags.outputs.dockerhub_version_sanitized }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

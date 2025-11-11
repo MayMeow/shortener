@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - '*'
   pull_request:
     branches:
       - main
@@ -28,6 +30,18 @@ jobs:
         run: echo "owner_lowercase=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
         shell: bash
 
+      - name: Prepare image tags
+        id: image_tags
+        env:
+          OWNER: ${{ steps.vars.outputs.owner_lowercase }}
+        run: |
+          echo "latest=ghcr.io/${OWNER}/shortener:latest" >> "$GITHUB_OUTPUT"
+          echo "sha=ghcr.io/${OWNER}/shortener:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            echo "version=ghcr.io/${OWNER}/shortener:${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          fi
+        shell: bash
+
       - name: Login to GitHub Container Registry
         if: github.event_name == 'push'
         uses: docker/login-action@v3
@@ -42,7 +56,8 @@ jobs:
           context: .
           push: ${{ github.event_name == 'push' }}
           tags: |
-            ghcr.io/${{ steps.vars.outputs.owner_lowercase }}/shortener:latest
-            ghcr.io/${{ steps.vars.outputs.owner_lowercase }}/shortener:${{ github.sha }}
+            ${{ steps.image_tags.outputs.latest }}
+            ${{ steps.image_tags.outputs.sha }}
+            ${{ steps.image_tags.outputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

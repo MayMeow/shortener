@@ -14,8 +14,12 @@ function New-ShortenerSignature {
         [Parameter(Mandatory = $true)][string]$Timestamp,
         [Parameter(Mandatory = $true)][string]$Method,
         [Parameter(Mandatory = $true)][string]$Path,
-        [Parameter(Mandatory = $true)][string]$Body
+        [Parameter()][string]$Body = ''
     )
+
+    if ($null -eq $Body) {
+        $Body = ''
+    }
 
     $canonical = [string]::Join("`n", @($Timestamp, $Method.ToUpperInvariant(), $Path, $Body))
     $bodyBytes = [System.Text.Encoding]::UTF8.GetBytes($canonical)

@@ -48,6 +48,11 @@ exit;
 
 function handleApiRequest(string $method, string $uri, string $rawBody, string $secret, LinkRepository $repository): void
 {
+    if ($method === 'GET' && $uri === '/api/health') {
+        jsonResponse(200, ['status' => 'ok']);
+        return;
+    }
+
     requireAuthentication($method, $uri, $rawBody, $secret);
 
     if ($method === 'POST' && $uri === '/api/shorten') {
@@ -70,7 +75,7 @@ function handleRedirectRequest(string $uri, LinkRepository $repository): void
     if ($code === '') {
         http_response_code(200);
         header('Content-Type: application/json');
-        echo json_encode(['message' => 'Link shortener API']);
+        echo json_encode(['message' => 'Link shortener API by maymeow']);
         return;
     }
 

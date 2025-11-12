@@ -16,6 +16,7 @@
     ],
     "require": {},
     "scripts": {
-        "test": "php test.php"
+        "test": "php test.php",
+        "server": "SHORTENER_SECRET=replace-with-a-random-string php -S localhost:8000 -t webroot"
     }
 }
